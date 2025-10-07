@@ -1,6 +1,10 @@
 package edu.upc.calculadora.calculadoradsa;
+
 import android.os.Bundle;
+import android.widget.Button;
 import android.widget.EditText;
+import android.view.View;
+
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
@@ -9,10 +13,11 @@ import androidx.core.view.WindowInsetsCompat;
 
 public class MainActivity extends AppCompatActivity {
 
-    private int op;
-    private double n1;
-    private double n2;
-    private double result;
+    private int op;         // Operación seleccionada
+    private double n1;      // Primer número
+    private double n2;      // Segundo número
+    private double result;  // Resultado
+    private EditText editText; // texto de la calculadora
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,28 +30,38 @@ public class MainActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+
+        editText = findViewById(R.id.editTextNumberDecimal);
+
+
+        int[] botonesNumeros = {
+                R.id.cero, R.id.uno, R.id.dos, R.id.tres, R.id.cuatro,
+                R.id.cinco, R.id.seis, R.id.siete, R.id.ocho, R.id.nueve
+        };
+
+        for (int id : botonesNumeros) {
+            Button b = findViewById(id);
+            b.setOnClickListener(this::onNumeroClick);
+        }
     }
 
 
-    public void Onsumar(android.view.View v) { leerPrimerNumero(); op = 1; }
-    public void Onrestar(android.view.View v) { leerPrimerNumero(); op = 2; }
-    public void Onmultiplicar(android.view.View v) { leerPrimerNumero(); op = 3; }
-    public void Ondividir(android.view.View v) { leerPrimerNumero(); op = 4; }
-    public void Onsin(android.view.View v) { leerPrimerNumero(); op = 6; }
-    public void Oncos(android.view.View v) { leerPrimerNumero(); op = 7; }
+    public void Onsumar(View v) { leerPrimerNumero(); op = 1; }
+    public void Onrestar(View v) { leerPrimerNumero(); op = 2; }
+    public void Onmultiplicar(View v) { leerPrimerNumero(); op = 3; }
+    public void Ondividir(View v) { leerPrimerNumero(); op = 4; }
+    public void Onsin(View v) { leerPrimerNumero(); op = 6; }
+    public void Oncos(View v) { leerPrimerNumero(); op = 7; }
 
 
-    public void Onlimpiar(android.view.View v) {
-        EditText editText = findViewById(R.id.editTextNumberDecimal);
+    public void Onlimpiar(View v) {
         editText.setText("");
         n1 = 0; n2 = 0; result = 0; op = 0;
     }
 
 
-    public void Onigual(android.view.View v) {
-        EditText editText = findViewById(R.id.editTextNumberDecimal);
+    public void Onigual(View v) {
         String valorTexto = editText.getText().toString();
-
 
         if (!valorTexto.isEmpty() && op != 6 && op != 7) {
             try {
@@ -71,13 +86,12 @@ public class MainActivity extends AppCompatActivity {
         }
 
         editText.setText(String.valueOf(result));
-        n1 = result;
+        n1 = result; // Guardar el resultado para operaciones encadenadas
     }
 
+    // --- LEER PRIMER NÚMERO ---
     private void leerPrimerNumero() {
-        EditText editText = findViewById(R.id.editTextNumberDecimal);
         String valorTexto = editText.getText().toString().trim();
-
 
         try {
             n1 = valorTexto.isEmpty() ? 0 : Double.parseDouble(valorTexto);
@@ -86,8 +100,15 @@ public class MainActivity extends AppCompatActivity {
             editText.setError("Introduce un número válido");
         }
 
+        editText.setText(""); // Limpiar para el segundo número
+    }
 
-        editText.setText("");
+    // --- CUANDO SE PULSA UN NÚMERO ---
+    private void onNumeroClick(View v) {
+        Button boton = (Button) v;
+        String numero = boton.getText().toString();
+
+        // Añadir el número al texto actual
+        editText.append(numero);
     }
 }
-
